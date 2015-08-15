@@ -1,10 +1,10 @@
-name := "Lift 2.6 starter template"
+name := "Github Link Checker"
 
-version := "0.0.4"
+version := "0.0.1"
 
-organization := "net.liftweb"
+organization := "ca.marvelmathew"
 
-scalaVersion := "2.11.2"
+scalaVersion := "2.11.7"
 
 resolvers ++= Seq("snapshots"     at "https://oss.sonatype.org/content/repositories/snapshots",
                 "releases"        at "https://oss.sonatype.org/content/repositories/releases"

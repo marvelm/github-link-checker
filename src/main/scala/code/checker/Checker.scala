@@ -14,6 +14,7 @@ object Checker {
 
   /**
     Generates a request to "https://api.github.com/repos/:owner/:repo"
+    The method name 'repos' refers to the "/repos" path
     */
   private def repos(repo: Repository) = github / "repos" / repo.owner / repo.name
 
@@ -22,11 +23,14 @@ object Checker {
     It returns a representation of the JSON reponse from the GitHub API.
     https://developer.github.com/v3/repos/#get
     */
-  def getRepo(repo: Repository): scala.concurrent.Future[JValue] = {
+  def getRepo(repo: Repository): Future[JValue] = {
     val svc = repos(repo)
     Http(svc OK as.String).map(parse)
   }
 
+  /**
+    Queries the GitHub API for README, then extracts the links from it.
+    */
   private def getReadmeLinks(repo: Repository): Future[Set[URL]] = {
     val readmeSvc = repos(repo) / "readme"
 

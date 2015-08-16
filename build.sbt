@@ -7,8 +7,7 @@ organization := "ca.marvelmathew"
 scalaVersion := "2.11.7"
 
 resolvers ++= Seq("snapshots"     at "https://oss.sonatype.org/content/repositories/snapshots",
-                "releases"        at "https://oss.sonatype.org/content/repositories/releases"
-                )
+                "releases"        at "https://oss.sonatype.org/content/repositories/releases")
 
 seq(webSettings :_*)
 
@@ -25,7 +24,9 @@ libraryDependencies ++= {
     "org.eclipse.jetty" % "jetty-plus"          % "8.1.7.v20120910"  % "container,test", // For Jetty Config
     "org.eclipse.jetty.orbit" % "javax.servlet" % "3.0.0.v201112011016" % "container,test" artifacts Artifact("javax.servlet", "jar", "jar"),
     "ch.qos.logback"    % "logback-classic"     % "1.0.6",
-    "org.specs2"        %% "specs2"             % "2.3.12"           % "test"
+    "org.specs2"        %% "specs2"             % "2.3.12"           % "test",
+    "net.databinder.dispatch" %% "dispatch-core" % "0.11.2",
+    "org.jsoup" % "jsoup" % "1.8.3",
+    "io.mola.galimatias" % "galimatias" % "0.2.0"
   )
 }
-

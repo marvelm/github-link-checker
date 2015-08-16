@@ -19,3 +19,7 @@ project/plugins/project/
 # IntelliJ IDEA
 # I don't use this, so I can't be sure if this actually works
 .idea
+
+# Ensime
+.ensime
+.ensime_cache

@@ -53,8 +53,8 @@ object Checker {
   }
 
   /** Performance a HEAD request at every link */
-  def checkLinks(links: Set[URL]) = {
-    val results = links.map{ link =>
+  def checkLinks(links: Set[URL]): Future[Set[CheckedLink]] = {
+    val results = links.map { link =>
       val req = url(link.toString()).HEAD
       Http(
         req > (res =>

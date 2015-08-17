@@ -1,19 +1,27 @@
 package code.checker
 
 import net.liftweb.common.{Box, Full, Empty}
-import net.liftweb.json._
+import net.liftweb.json.{parse, JValue, JString}
 import dispatch._, Defaults._
 import org.jsoup.Jsoup
 import io.mola.galimatias.URL
+
+// Allows the use of scala.collection functions on JSoup nodes
 import scala.collection.JavaConversions._
 
 /** Represents a repository
   */
 case class Repository(owner: String, name: String)
 
-/** Represents a link that has been checked
+/** Represents a link that has been checked.
+  * A Set[CheckedLink] is guaranteed to be unique only on the URL.
   */
-case class CheckedLink(url: URL, valid: Boolean)
+case class CheckedLink(url: URL, valid: Boolean) {
+  override def equals(that : Any): Boolean = that match {
+    case CheckedLink(thatUrl, _) => this.url equals thatUrl
+    case _ => that equals this
+  }
+}
 
 object Checker {
   private val github = host("api.github.com").secure

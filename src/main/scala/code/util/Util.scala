@@ -21,11 +21,16 @@ object Util {
     }
 
     scf.onFailure {
-      case e: Throwable => laf.fail(Failure(e.getMessage, Full(e), Empty))
+      case t: Throwable => laf.fail(Failure(t.getMessage, Full(t), Empty))
+      case e: Exception => laf.fail(e)
     }
 
     laf
   }
+
+  /* 'FutureIsHere' and 'laFutureNSTTransform' are from Diego Medina's (fmpwizard) blog post.
+   https://fmpwizard.telegr.am/blog/async-snippets-in-lift
+   */
 
   case class FutureIsHere(la: LAFuture[NodeSeq], id: String) extends JsCmd {
     val updatePage: JsCmd = if (la.isSatisfied) {

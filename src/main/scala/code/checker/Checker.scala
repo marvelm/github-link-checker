@@ -11,7 +11,9 @@ import scala.collection.JavaConversions._
 
 /** Represents a repository
   */
-case class Repository(owner: String, name: String)
+case class Repository(owner: String, name: String) {
+  override def toString() = s"$owner/$name"
+}
 
 /** Represents a link that has been checked.
   * A Set[CheckedLink] is guaranteed to be unique only on the URL.
@@ -60,7 +62,8 @@ object Checker {
     }
   }
 
-  /** Performance a HEAD request at every link */
+  /** Performance a HEAD request at every link and checks whether the response
+    * code is 200.*/
   def checkLinks(links: Set[URL]): Future[Set[CheckedLink]] = {
     val results = links.map { link =>
       val req = url(link.toString()).HEAD

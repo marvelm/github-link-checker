@@ -10,7 +10,8 @@ object CheckerSnippet {
     <div>
       {n}
       <div>
-       <a href="/">Click here to try again</a>
+       Redirecting in 1 second.
+       <a href="/">Click here if you are not redirected.</a>
       </div>
       <script>
       setTimeout(function() {{
@@ -26,14 +27,14 @@ object CheckerSnippet {
       if (parts.length == 2) {
         val owner = parts(0)
         val name = parts(1)
-      } else {
+        
+      } else
         error(
           <div>
             The repository should be of the format: owner/repository.
             For example: marvelm/github-link-checker.
             </div>
         )
-      }
     case Empty =>
       error(
         <div>

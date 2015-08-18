@@ -2,12 +2,12 @@ package code.util
 
 import net.liftweb.actor.LAFuture
 import net.liftweb.common.{ Box, Empty, Full, Failure }
+import net.liftweb.util.Helpers._
+import net.liftweb.util.CanBind
 import net.liftweb.http.js.{ JE, JsCmd }
 import net.liftweb.http.js.JsCmds._
 import net.liftweb.http.S
 import net.liftweb.http.SHtml
-import net.liftweb.util.Helpers._
-import net.liftweb.util.CanBind
 
 import scala.concurrent.{ ExecutionContext, Future }
 import scala.xml.{ Elem, NodeSeq }
@@ -33,11 +33,11 @@ object Util {
    */
 
   case class FutureIsHere(la: LAFuture[NodeSeq], id: String) extends JsCmd {
-    val updatePage: JsCmd = if (la.isSatisfied) {
-      Replace(id, la.get)
-    } else {
-      tryAgain()
-    }
+    val updatePage: JsCmd =
+      if (la.isSatisfied)
+        Replace(id, la.get)
+      else
+        tryAgain()
 
     private def tryAgain(): JsCmd = {
       val funcName: String = S.request.flatMap(_._params.toList.headOption.map(_._1)).openOr("")
@@ -58,13 +58,13 @@ object Util {
 
       val id: String = elem.map(_.attributes.filter(att => att.key == "id")).map { meta =>
         tryo(meta.value.text).getOrElse(nextFuncName)
-      } getOrElse ("")
+      } getOrElse("")
 
       val ret: Option[NodeSeq] = ns.toList match {
         case head :: tail => {
-          elem.map { e =>
+          elem.map ( e =>
             e % ("id" -> id) ++ tail ++ Script(OnLoad(SHtml.ajaxInvoke(() => FutureIsHere(future, id)).exp.cmd))
-          }
+          )
         }
 
         case empty => None

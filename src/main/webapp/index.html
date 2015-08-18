@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8"/>
     <title>Home</title>
   </head>
   <body data-lift-content-id="main">
-    <div id="main" data-lift="surround?with=default;at=content">
-      <p>
-        <span data-lift="">
-        </span>
-      </p>
-    </div>
+      <div id="main" data-lift="surround?with=default;at=content">
+          <div>
+              <p>owner/repository</p>
+              <form action="/checker" method="get">
+                  <input type="text" name="repo">
+                  <input type="submit" value="submit">
+              </form>
+          </div>
+      </div>
   </body>
 </html>

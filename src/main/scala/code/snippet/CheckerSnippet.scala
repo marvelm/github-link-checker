@@ -14,7 +14,10 @@ import code.util.Util._
 object CheckerSnippet {
   val VALID = "valid"
   val INVALID = "invalid"
+  val CHECKING = "checking"
+
   def asyncCheckRepo(repo: Repository): LAFuture[NodeSeq] = {
+    S.set(repo.toString, CHECKING)
     val laf = new LAFuture[NodeSeq]
     val scf = Checker.getRepo(repo)
     scf.onSuccess {

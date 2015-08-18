@@ -27,11 +27,12 @@ class Boot {
       // more complex because this menu allows anything in the
       // /static path to be visible
       Menu(Loc("Static", Link(List("static"), true, "/static/index"),
-	       "Static Content")))
+        "Static Content"))
+    )
 
     // set the sitemap.  Note if you don't want access control for
     // each page, just comment this line out.
-    LiftRules.setSiteMap(SiteMap(entries:_*))
+    LiftRules.setSiteMap(SiteMap(entries: _*))
 
     //Show the spinny image when an Ajax call starts
     LiftRules.ajaxStart =
@@ -46,7 +47,7 @@ class Boot {
 
     //Init the jQuery module, see http://liftweb.net/jquery for more information.
     LiftRules.jsArtifacts = JQueryArtifacts
-    JQueryModule.InitParam.JQuery=JQueryModule.JQuery191
+    JQueryModule.InitParam.JQuery = JQueryModule.JQuery191
     JQueryModule.init()
 
   }

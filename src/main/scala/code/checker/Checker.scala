@@ -1,7 +1,7 @@
 package code.checker
 
-import net.liftweb.common.{Box, Full, Empty}
-import net.liftweb.json.{parse, JValue, JString}
+import net.liftweb.common.{ Box, Full, Empty }
+import net.liftweb.json.{ parse, JValue, JString }
 import dispatch._, Defaults._
 import org.jsoup.Jsoup
 import io.mola.galimatias.URL
@@ -9,17 +9,19 @@ import io.mola.galimatias.URL
 // Allows the use of scala.collection functions on JSoup nodes
 import scala.collection.JavaConversions._
 
-/** Represents a repository
-  */
+/**
+ * Represents a repository
+ */
 case class Repository(owner: String, name: String) {
   override def toString() = s"$owner/$name"
 }
 
-/** Represents a link that has been checked.
-  * A Set[CheckedLink] is guaranteed to be unique only on the URL.
-  */
+/**
+ * Represents a link that has been checked.
+ * A Set[CheckedLink] is guaranteed to be unique only on the URL.
+ */
 case class CheckedLink(url: URL, valid: Boolean) {
-  override def equals(that : Any): Boolean = that match {
+  override def equals(that: Any): Boolean = that match {
     case CheckedLink(thatUrl, _) => this.url equals thatUrl
     case _ => that equals this
   }
@@ -28,22 +30,25 @@ case class CheckedLink(url: URL, valid: Boolean) {
 object Checker {
   private val github = host("api.github.com").secure
 
-  /** Generates a request to "https://api.github.com/repos/:owner/:repo"
-    * The method name 'repos' refers to the "/repos" path
-    */
+  /**
+   * Generates a request to "https://api.github.com/repos/:owner/:repo"
+   * The method name 'repos' refers to the "/repos" path
+   */
   private def repos(repo: Repository) = github / "repos" / repo.owner / repo.name
 
-  /** getRepo should be used for checking if a repository exists.
-    * It yields a representation of the JSON reponse from the GitHub API.
-    * https://developer.github.com/v3/repos/#get
-    */
+  /**
+   * getRepo should be used for checking if a repository exists.
+   * It yields a representation of the JSON reponse from the GitHub API.
+   * https://developer.github.com/v3/repos/#get
+   */
   def getRepo(repo: Repository): Future[JValue] = {
     val svc = repos(repo)
     Http(svc OK as.String).map(parse)
   }
 
-  /** Queries the GitHub API for README, then extracts the links from it.
-    */
+  /**
+   * Queries the GitHub API for README, then extracts the links from it.
+   */
   def getReadmeLinks(repo: Repository): Future[Set[URL]] = {
     val readmeSvc = repos(repo) / "readme"
 
@@ -62,8 +67,10 @@ object Checker {
     }
   }
 
-  /** Performance a HEAD request at every link and checks whether the response
-    * code is 200.*/
+  /**
+   * Performance a HEAD request at every link and checks whether the response
+   * code is 200.
+   */
   def checkLinks(links: Set[URL]): Future[Set[CheckedLink]] = {
     val results = links.map { link =>
       val req = url(link.toString()).HEAD
@@ -72,8 +79,8 @@ object Checker {
           if (res.getStatusCode() == 200)
             CheckedLink(link, true)
           else
-            CheckedLink(link, false)
-        ))
+            CheckedLink(link, false))
+      )
     }
     Future.sequence(results)
   }

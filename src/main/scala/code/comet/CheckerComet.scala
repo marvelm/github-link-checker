@@ -1,6 +1,6 @@
 package code.comet
 
-import net.liftweb.http.{CometActor, CometListener, ListenerManager}
+import net.liftweb.http.{ CometActor, CometListener, ListenerManager }
 import net.liftweb.actor.LiftActor
 import code.checker.CheckedLink
 
@@ -19,7 +19,7 @@ class CheckerComet(name: String) extends CometActor with CometListener {
       {
         for (link <- links) yield {
           <div>
-            {link.toString()}
+            { link.toString() }
           </div>
         }
       }

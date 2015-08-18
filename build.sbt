@@ -15,6 +15,8 @@ unmanagedResourceDirectories in Test <+= (baseDirectory) { _ / "src/main/webapp"
 
 scalacOptions ++= Seq("-deprecation", "-unchecked")
 
+scalariformSettings
+
 libraryDependencies ++= {
   val liftVersion = "2.6.2"
   Seq(

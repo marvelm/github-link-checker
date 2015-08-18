@@ -58,13 +58,12 @@ object Util {
 
       val id: String = elem.map(_.attributes.filter(att => att.key == "id")).map { meta =>
         tryo(meta.value.text).getOrElse(nextFuncName)
-      } getOrElse("")
+      } getOrElse ("")
 
       val ret: Option[NodeSeq] = ns.toList match {
         case head :: tail => {
-          elem.map ( e =>
-            e % ("id" -> id) ++ tail ++ Script(OnLoad(SHtml.ajaxInvoke(() => FutureIsHere(future, id)).exp.cmd))
-          )
+          elem.map(e =>
+            e % ("id" -> id) ++ tail ++ Script(OnLoad(SHtml.ajaxInvoke(() => FutureIsHere(future, id)).exp.cmd)))
         }
 
         case empty => None

@@ -12,8 +12,22 @@ import code.checker.{ Checker, Repository }
 import code.util.Util._
 
 object CheckerSnippet {
+  val VALID = "valid"
+  val INVALID = "invalid"
   def asyncCheckRepo(repo: Repository): LAFuture[NodeSeq] = {
-    Checker.getRepo(repo).map(_ => <div>Repository({ repo.toString() }) is valid</div>)
+    val laf = new LAFuture[NodeSeq]
+    val scf = Checker.getRepo(repo)
+    scf.onSuccess {
+      case _ =>
+        S.set(repo.toString, VALID)
+        laf.satisfy(<div>Repository({ repo.toString() }) is valid</div>)
+    }
+    scf.onFailure {
+      case _ =>
+        S.set(repo.toString, INVALID)
+        laf.satisfy(<div>Repository({ repo.toString() }) is invalid</div>)
+    }
+    laf
   }
 
   def error(n: NodeSeq) = {

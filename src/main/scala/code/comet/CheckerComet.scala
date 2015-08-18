@@ -2,19 +2,20 @@ package code.comet
 
 import net.liftweb.http.{ CometActor, CometListener, ListenerManager }
 import net.liftweb.actor.LiftActor
+
 import code.checker.CheckedLink
 
 class CheckerComet(name: String) extends CometActor with CometListener {
   private var links = Vector[CheckedLink]()
 
-  def registerWith = RunChecker()
+  val registerWith = new RunChecker
 
   override def lowPriority = {
     case links: Vector[CheckedLink] =>
       this.links = links
   }
 
-  def render = {
+  def render =
     <div>
       {
         for (link <- links) yield {
@@ -24,7 +25,6 @@ class CheckerComet(name: String) extends CometActor with CometListener {
         }
       }
     </div>
-  }
 }
 
 class RunChecker extends LiftActor with ListenerManager {

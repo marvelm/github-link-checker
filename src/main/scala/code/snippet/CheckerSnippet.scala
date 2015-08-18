@@ -1,12 +1,20 @@
 package code.snippet
 
-import net.liftweb.util.Helpers._
+import net.liftweb.util.Helpers.{
+  intToTimeSpan => _,
+  intToTimeSpanBuilder => _,
+  _
+}
 import net.liftweb.http.S
 import net.liftweb.common.{ Box, Full, Empty }
 import net.liftweb.actor.LAFuture
 
 import scala.xml.NodeSeq
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Await
+import scala.concurrent.duration._
+import scala.util.Success
+import scala.util.Failure
 
 import code.checker.{ Checker, Repository }
 import code.util.Util._
@@ -56,7 +64,23 @@ object CheckerSnippet {
         val owner = parts(0)
         val name = parts(1)
         val repo = Repository(owner, name)
-        ".error" #> asyncCheckRepo(repo)
+
+        Await.ready(Checker.getReadmeLinks(repo), 10.seconds).value.get match {
+          case Success(links) =>
+            Await.ready(Checker.checkLinks(links), 30.seconds).value.get match {
+              case Success(links) =>
+                val brokenLinks = links.filter(!_.valid)
+                "#links" #>
+                  <div id="links">
+                  {for(link <- brokenLinks) yield
+                     <div>{link.url.toString}</div>}
+                  </div>
+            }
+
+          case Failure(e) =>
+            "#error" #> <div>Failed to retrieve links</div>
+        }
+
       } else
         error(
           <div>

@@ -5573,9 +5573,9 @@ $c_Lchecker_Checker$.prototype.$$js$exported$meth$inputChange__O = (function() {
   this.inputChange__V()
 });
 $c_Lchecker_Checker$.prototype.inputChange__V = (function() {
-  var thiz = $as_T(this.input$1["nodeValue"]);
+  var thiz = $as_T(this.input$1["value"]);
   var arr = $m_sjsr_RuntimeString$().split__T__T__I__AT(thiz, "/", 0);
-  var repo = new $c_Lchecker_Repo().init___T__T(arr.u[0], arr.u[0]);
+  var repo = new $c_Lchecker_Repo().init___T__T(arr.u[0], arr.u[1]);
   this.checkRepository__p1__Lchecker_Repo__V(repo)
 });
 $c_Lchecker_Checker$.prototype.$$js$exported$prop$display__O = (function() {

@@ -1,8 +1,9 @@
 package checker
 
-import org.scalajs.dom.document
+import org.scalajs.dom
+import org.scalajs.dom.{html, document}
 import org.scalajs.dom.ext.Ajax
-import org.scalajs.dom.raw.{Document, Element, Node, NodeList}
+import org.scalajs.dom.raw._
 
 import scala.collection.immutable.IndexedSeq
 import scala.concurrent.Future
@@ -20,10 +21,10 @@ case class Repo(owner: String, name: String) {
 @JSExport
 object Checker extends js.JSApp {
   @JSExport
-  val display = document.getElementById("display")
+  val display = document.getElementById("display").asInstanceOf[html.Div]
 
   @JSExport
-  val input = document.getElementById("input")
+  val input = document.getElementById("input").asInstanceOf[html.Input]
 
   @JSExport
   def main() {
@@ -33,8 +34,8 @@ object Checker extends js.JSApp {
   @JSExport
   def inputChange() {
     val repo = {
-      val arr = input.nodeValue.split("/")
-      Repo(arr(0), arr(0))
+      val arr = input.value.split("/")
+      Repo(arr(0), arr(1))
     }
     checkRepository(repo)
   }

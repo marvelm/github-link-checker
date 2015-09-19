@@ -19,7 +19,10 @@ case class Repo(owner: String, name: String) {
 
 @JSExport
 object Checker extends js.JSApp {
+  @JSExport
   val display = document.getElementById("display")
+
+  @JSExport
   val input = document.getElementById("input")
 
   @JSExport

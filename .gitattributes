@@ -1,0 +1,3 @@
+target/scala-2.11/github-link-checker-fastopt.js -diff
+target/scala-2.11/github-link-checker-fastopt.js.map -diff
+target/scala-2.11/github-link-checker-jsdeps.js -diff

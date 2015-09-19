@@ -5510,12 +5510,6 @@ function $h_Lchecker_Checker$() {
   /*<skip>*/
 }
 $h_Lchecker_Checker$.prototype = $c_Lchecker_Checker$.prototype;
-$c_Lchecker_Checker$.prototype.init___ = (function() {
-  $n_Lchecker_Checker$ = this;
-  this.display$1 = $g["document"]["getElementById"]("display");
-  this.input$1 = $g["document"]["getElementById"]("input");
-  return this
-});
 $c_Lchecker_Checker$.prototype.checkRepository__p1__Lchecker_Repo__V = (function(repo) {
   var this$5 = $m_Lorg_scalajs_dom_ext_Ajax$();
   var url = repo.githubUrl$1;
@@ -5530,6 +5524,12 @@ $c_Lchecker_Checker$.prototype.checkRepository__p1__Lchecker_Repo__V = (function
   var executor$1 = $m_sjs_concurrent_JSExecutionContext$Implicits$().queue$1;
   $s_s_concurrent_Future$class__foreach__s_concurrent_Future__F1__s_concurrent_ExecutionContext__V(this$7, f$1, executor$1)
 });
+$c_Lchecker_Checker$.prototype.init___ = (function() {
+  $n_Lchecker_Checker$ = this;
+  this.display$1 = $g["document"]["getElementById"]("display");
+  this.input$1 = $g["document"]["getElementById"]("input");
+  return this
+});
 $c_Lchecker_Checker$.prototype.getLinks__p1__T__Lorg_scalajs_dom_raw_Element__s_concurrent_Future = (function(root, el) {
   var this$2 = this.nodeList2Seq__p1__Lorg_scalajs_dom_raw_NodeList__sci_IndexedSeq(el["getElementsByTagName"]("a"));
   var f = new $c_Lchecker_Checker$$anonfun$1().init___T(root);
@@ -5537,6 +5537,9 @@ $c_Lchecker_Checker$.prototype.getLinks__p1__T__Lorg_scalajs_dom_raw_Element__s_
   var bf = $m_sc_IndexedSeq$().ReusableCBF$6;
   var links = $as_sci_IndexedSeq($s_sc_TraversableLike$class__map__sc_TraversableLike__F1__scg_CanBuildFrom__O(this$2, f, bf));
   return $m_s_concurrent_Future$().sequence__sc_TraversableOnce__scg_CanBuildFrom__s_concurrent_ExecutionContext__s_concurrent_Future(links, ($m_sci_IndexedSeq$(), $m_sc_IndexedSeq$().ReusableCBF$6), $m_sjs_concurrent_JSExecutionContext$Implicits$().queue$1)
+});
+$c_Lchecker_Checker$.prototype.$$js$exported$prop$input__O = (function() {
+  return this.input$1
 });
 $c_Lchecker_Checker$.prototype.nodeList2Seq__p1__Lorg_scalajs_dom_raw_NodeList__sci_IndexedSeq = (function(nl) {
   var end = $uI(nl["length"]);
@@ -5575,6 +5578,9 @@ $c_Lchecker_Checker$.prototype.inputChange__V = (function() {
   var repo = new $c_Lchecker_Repo().init___T__T(arr.u[0], arr.u[0]);
   this.checkRepository__p1__Lchecker_Repo__V(repo)
 });
+$c_Lchecker_Checker$.prototype.$$js$exported$prop$display__O = (function() {
+  return this.display$1
+});
 $c_Lchecker_Checker$.prototype.$$js$exported$meth$main__O = (function() {
   var this$2 = $m_s_Console$();
   var this$3 = this$2.outVar$2;
@@ -5583,6 +5589,18 @@ $c_Lchecker_Checker$.prototype.$$js$exported$meth$main__O = (function() {
 $c_Lchecker_Checker$.prototype.checker$Checker$$getReadmeLinks__Lchecker_Repo__Lorg_scalajs_dom_raw_Document__s_concurrent_Future = (function(repo, doc) {
   var readme = doc["getElementById"]("readme");
   return this.getLinks__p1__T__Lorg_scalajs_dom_raw_Element__s_concurrent_Future(repo.githubUrl$1, readme)
+});
+Object["defineProperty"]($c_Lchecker_Checker$.prototype, "display", {
+  "get": (function() {
+    return this.$$js$exported$prop$display__O()
+  }),
+  "enumerable": true
+});
+Object["defineProperty"]($c_Lchecker_Checker$.prototype, "input", {
+  "get": (function() {
+    return this.$$js$exported$prop$input__O()
+  }),
+  "enumerable": true
 });
 $c_Lchecker_Checker$.prototype["main"] = (function() {
   return this.$$js$exported$meth$main__O()

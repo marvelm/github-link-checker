@@ -6,7 +6,6 @@
 .history
 .lib/
 dist/*
-target/
 lib_managed/
 src_managed/
 project/boot/
@@ -24,4 +23,8 @@ project/plugins/project/
 .ensime
 .ensime_cache
 
-local.sbt
+# ScalaJS
+project/project
+project/target
+target/resolution-cache
+target/streams

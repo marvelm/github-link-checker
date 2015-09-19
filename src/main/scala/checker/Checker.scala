@@ -1,19 +1,19 @@
 package checker
 
+import org.scalajs.dom.document
 import org.scalajs.dom.ext.Ajax
-import org.scalajs.dom.raw.{Document, Node, NodeList, Element}
+import org.scalajs.dom.raw.{Document, Element, Node, NodeList}
 
 import scala.collection.immutable.IndexedSeq
 import scala.concurrent.Future
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSExport
-import org.scalajs.dom
-import dom.document
+import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 
 case class Link(url: String, page: String, linkText: String, broken: Boolean)
 
 case class Repo(owner: String, name: String) {
-  val githubUrl  = s"http://github.com/$owner/$name"
+  val githubUrl = s"http://github.com/$owner/$name"
   val ghPagesUrl = s"http://$owner.github.io/$name"
 }
 

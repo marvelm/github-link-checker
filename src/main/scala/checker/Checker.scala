@@ -27,6 +27,7 @@ object Checker extends js.JSApp {
     println("Hello world")
   }
 
+  @JSExport
   def inputChange() {
     val repo = {
       val arr = input.nodeValue.split("/")
@@ -53,8 +54,7 @@ object Checker extends js.JSApp {
     for (i <- 0 to nl.length) yield nl(i)
 
   private def getLinks(root: String, el: Element) = {
-    val aElements = el.getElementsByTagName("a")
-    val brokenLinks = for (a <- aElements) yield {
+    val links = for (a <- el.getElementsByTagName("a")) yield {
       val href = a.attributes.getNamedItem("href")
       val checkedLinks = Ajax.get(href.value).map { req =>
         val broken = req.status.toString.startsWith("4")
@@ -62,7 +62,7 @@ object Checker extends js.JSApp {
       }
       checkedLinks
     }
-    Future.sequence(brokenLinks)
+    Future.sequence(links)
   }
 
   private def getReadmeLinks(repo: Repo, doc: Document) = {

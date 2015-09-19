@@ -28,3 +28,4 @@ project/project
 project/target
 target/resolution-cache
 target/streams
+target/scala-2.11/classes/checker

@@ -2,6 +2,7 @@
 extern crate string_cache;
 extern crate hyper;
 extern crate kuchiki;
+extern crate url;
 
 use std::env::args;
 use std::fmt;
@@ -9,6 +10,8 @@ use std::fmt;
 use hyper::Client;
 
 use kuchiki::Html;
+
+use url::{Url, UrlParser, ParseError};
 
 fn main() {
     let arg = args().last().unwrap();
@@ -36,24 +39,26 @@ impl Repo {
 }
 impl fmt::Display for Repo {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "({},{})", self.owner, self.name)
+        write!(f, "{}/{}", self.owner, self.name)
     }
 }
 
-fn check_readme(repo: Repo) -> Vec<String> {
+fn check_readme(repo: Repo) -> Vec<Url> {
     let client = Client::new();
-    let mut res = client.get(&repo.url()[..])
-        .send().unwrap();
+    let readmeUrl = Url::parse(&repo.url()[..]).unwrap();
+    let mut res = client.get(&repo.url()[..]).send().unwrap();
     let html = Html::from_stream(&mut res).unwrap();
     let doc = html.parse();
 
-    let mut ret: Vec<String> = Vec::new();
+    let mut ret: Vec<Url> = Vec::new();
     for a in doc.select("#readme a").unwrap() {
         let node = a.as_node();
         let el = node.as_element().unwrap();
         let attrs = el.attributes.borrow();
         let href = attrs.get(&qualname!("", "href")).unwrap();
-        ret.push(href.clone());
+        let url = UrlParser::new().base_url(&readmeUrl.clone())
+            .parse(href).unwrap();
+        ret.push(url);
     }
     ret
 }

@@ -6,6 +6,7 @@ authors = ["m <m@marvelmathew.ca>"]
 [dependencies]
 hyper = "0.6.14"
 string_cache = "0.1.13"
+url = "0.2.37"
 
 [dependencies.kuchiki]
 git = "https://github.com/marvelm/kuchiki"

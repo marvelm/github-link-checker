@@ -56,7 +56,7 @@ fn check_readme(repo: Repo) -> Vec<Url> {
         let el = node.as_element().unwrap();
         let attrs = el.attributes.borrow();
         let href = attrs.get(&qualname!("", "href")).unwrap();
-        let url = UrlParser::new().base_url(&readmeUrl.clone())
+        let url = UrlParser::new().base_url(&readmeUrl)
             .parse(href).unwrap();
         ret.push(url);
     }

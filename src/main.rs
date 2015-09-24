@@ -43,14 +43,32 @@ impl fmt::Display for Repo {
     }
 }
 
-fn check_readme(repo: Repo) -> Vec<Url> {
+struct CheckedLink {
+    url: Url,
+    broken: bool
+}
+impl fmt::Display for CheckedLink {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "({}, broken={})", self.url, self.broken)
+    }
+}
+
+fn is_broken(url: Url) -> bool {
+    let client = Client::new();
+    match client.get(&url.serialize()[..]).send() {
+        Ok(res) => !res.status.is_success(),
+        Err(_) => false,
+    }
+}
+
+fn check_readme(repo: Repo) -> Vec<CheckedLink> {
     let client = Client::new();
     let readmeUrl = Url::parse(&repo.url()[..]).unwrap();
     let mut res = client.get(&repo.url()[..]).send().unwrap();
     let html = Html::from_stream(&mut res).unwrap();
     let doc = html.parse();
 
-    let mut ret: Vec<Url> = Vec::new();
+    let mut ret: Vec<CheckedLink> = Vec::new();
     for a in doc.select("#readme a").unwrap() {
         let node = a.as_node();
         let el = node.as_element().unwrap();
@@ -58,7 +76,11 @@ fn check_readme(repo: Repo) -> Vec<Url> {
         let href = attrs.get(&qualname!("", "href")).unwrap();
         let url = UrlParser::new().base_url(&readmeUrl)
             .parse(href).unwrap();
-        ret.push(url);
+
+        ret.push(CheckedLink{
+            url: url.clone(),
+            broken: is_broken(url)
+        });
     }
     ret
 }

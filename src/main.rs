@@ -20,8 +20,6 @@ fn main() {
         }
     };
 
-    println!("{}", repo);
-
     for url in check_readme(repo) {
         println!("{}", url);
     }
@@ -31,13 +29,11 @@ struct Repo {
     owner: String,
     name: String
 }
-
 impl Repo {
     fn url(&self) -> String {
         format!("https://github.com/{}/{}", self.owner, self.name)
     }
 }
-
 impl fmt::Display for Repo {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "({},{})", self.owner, self.name)

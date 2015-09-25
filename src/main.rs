@@ -6,6 +6,7 @@ extern crate url;
 
 use std::env::args;
 use std::fmt;
+use std::collections::HashSet;
 
 use hyper::Client;
 
@@ -23,8 +24,8 @@ fn main() {
         }
     };
 
-    for url in check_readme(repo) {
-        println!("{}", url);
+    for link in check_readme(repo) {
+        println!("{}", link);
     }
 }
 
@@ -43,6 +44,7 @@ impl fmt::Display for Repo {
     }
 }
 
+#[derive(Hash, Debug)]
 struct CheckedLink {
     url: Url,
     broken: bool
@@ -52,6 +54,15 @@ impl fmt::Display for CheckedLink {
         write!(f, "({}, broken={})", self.url, self.broken)
     }
 }
+impl std::cmp::PartialEq for CheckedLink {
+    fn eq(&self, other: &CheckedLink) -> bool {
+       self.url.serialize_no_fragment() == other.url.serialize_no_fragment()
+    }
+    fn ne(&self, other: &CheckedLink) -> bool {
+        !self.eq(other)
+    }
+}
+impl std::cmp::Eq for CheckedLink {}
 
 fn is_broken(url: Url) -> bool {
     let client = Client::new();
@@ -61,14 +72,14 @@ fn is_broken(url: Url) -> bool {
     }
 }
 
-fn check_readme(repo: Repo) -> Vec<CheckedLink> {
+fn check_readme(repo: Repo) -> HashSet<CheckedLink> {
     let client = Client::new();
     let readmeUrl = Url::parse(&repo.url()[..]).unwrap();
     let mut res = client.get(&repo.url()[..]).send().unwrap();
     let html = Html::from_stream(&mut res).unwrap();
     let doc = html.parse();
 
-    let mut ret: Vec<CheckedLink> = Vec::new();
+    let mut links = HashSet::new();
     for a in doc.select("#readme a").unwrap() {
         let node = a.as_node();
         let el = node.as_element().unwrap();
@@ -76,11 +87,10 @@ fn check_readme(repo: Repo) -> Vec<CheckedLink> {
         let href = attrs.get(&qualname!("", "href")).unwrap();
         let url = UrlParser::new().base_url(&readmeUrl)
             .parse(href).unwrap();
-
-        ret.push(CheckedLink{
+        links.insert(CheckedLink{
             url: url.clone(),
             broken: is_broken(url)
         });
     }
-    ret
+    links
 }

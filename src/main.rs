@@ -31,7 +31,7 @@ fn main() {
 
 struct Repo {
     owner: String,
-    name: String
+    name: String,
 }
 impl Repo {
     fn url(&self) -> String {
@@ -47,7 +47,8 @@ impl fmt::Display for Repo {
 #[derive(Hash, Debug)]
 struct CheckedLink {
     url: Url,
-    broken: bool
+    broken: bool,
+    referrer: Url,
 }
 impl fmt::Display for CheckedLink {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -64,7 +65,7 @@ impl std::cmp::PartialEq for CheckedLink {
 }
 impl std::cmp::Eq for CheckedLink {}
 
-fn is_broken(url: Url) -> bool {
+fn is_broken(url: &Url) -> bool {
     let client = Client::new();
     match client.get(&url.serialize()[..]).send() {
         Ok(res) => !res.status.is_success(),
@@ -87,10 +88,17 @@ fn check_readme(repo: Repo) -> HashSet<CheckedLink> {
         let href = attrs.get(&qualname!("", "href")).unwrap();
         let url = UrlParser::new().base_url(&readmeUrl)
             .parse(href).unwrap();
-        links.insert(CheckedLink{
+
+        let mut link = CheckedLink {
             url: url.clone(),
-            broken: is_broken(url)
-        });
+            broken: false,
+            referrer: readmeUrl.clone()
+        };
+
+        if !links.contains(&link) {
+            link.broken = is_broken(&url);
+            links.insert(link);
+        }
     }
     links
 }

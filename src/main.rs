@@ -12,7 +12,7 @@ use hyper::Client;
 
 use kuchiki::Html;
 
-use url::{Url, UrlParser, ParseError};
+use url::{Url, UrlParser};
 
 fn main() {
     let arg = args().last().unwrap();
@@ -44,7 +44,7 @@ impl fmt::Display for Repo {
     }
 }
 
-#[derive(Hash, Debug)]
+#[derive(Debug)]
 struct CheckedLink {
     url: Url,
     broken: bool,
@@ -59,8 +59,10 @@ impl std::cmp::PartialEq for CheckedLink {
     fn eq(&self, other: &CheckedLink) -> bool {
        self.url.serialize_no_fragment() == other.url.serialize_no_fragment()
     }
-    fn ne(&self, other: &CheckedLink) -> bool {
-        !self.eq(other)
+}
+impl std::hash::Hash for CheckedLink {
+    fn hash<H>(&self, state: &mut H) where H: std::hash::Hasher {
+        state.write(&self.url.serialize_no_fragment().into_bytes()[..]);
     }
 }
 impl std::cmp::Eq for CheckedLink {}
@@ -75,7 +77,7 @@ fn is_broken(url: &Url) -> bool {
 
 fn check_readme(repo: Repo) -> HashSet<CheckedLink> {
     let client = Client::new();
-    let readmeUrl = Url::parse(&repo.url()[..]).unwrap();
+    let readme_url = Url::parse(&repo.url()[..]).unwrap();
     let mut res = client.get(&repo.url()[..]).send().unwrap();
     let html = Html::from_stream(&mut res).unwrap();
     let doc = html.parse();
@@ -86,13 +88,13 @@ fn check_readme(repo: Repo) -> HashSet<CheckedLink> {
         let el = node.as_element().unwrap();
         let attrs = el.attributes.borrow();
         let href = attrs.get(&qualname!("", "href")).unwrap();
-        let url = UrlParser::new().base_url(&readmeUrl)
+        let url = UrlParser::new().base_url(&readme_url)
             .parse(href).unwrap();
 
         let mut link = CheckedLink {
             url: url.clone(),
             broken: false,
-            referrer: readmeUrl.clone()
+            referrer: readme_url.clone()
         };
 
         if !links.contains(&link) {

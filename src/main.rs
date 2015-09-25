@@ -23,7 +23,6 @@ fn main() {
             name: split.next().unwrap().to_string()
         }
     };
-
     for link in check_readme(repo) {
         println!("{}", link);
     }
@@ -57,12 +56,16 @@ impl fmt::Display for CheckedLink {
 }
 impl std::cmp::PartialEq for CheckedLink {
     fn eq(&self, other: &CheckedLink) -> bool {
-       self.url.serialize_no_fragment() == other.url.serialize_no_fragment()
+        self.url.serialize_no_fragment() == other.url.serialize_no_fragment()
+            && self.referrer.serialize_no_fragment() == other.referrer.serialize_no_fragment()
     }
 }
 impl std::hash::Hash for CheckedLink {
     fn hash<H>(&self, state: &mut H) where H: std::hash::Hasher {
-        state.write(&self.url.serialize_no_fragment().into_bytes()[..]);
+        let mut bytes = self.url.serialize_no_fragment().into_bytes();
+        let referrer = self.referrer.serialize_no_fragment().into_bytes();
+        bytes.extend(referrer);
+        state.write(&bytes[..]);
     }
 }
 impl std::cmp::Eq for CheckedLink {}
@@ -83,7 +86,12 @@ fn check_readme(repo: Repo) -> HashSet<CheckedLink> {
     let doc = html.parse();
 
     let mut links = HashSet::new();
-    for a in doc.select("#readme a").unwrap() {
+    let select = doc.select("#readme a");
+    if select.is_err() {
+        return links;
+    }
+
+    for a in select.unwrap() {
         let node = a.as_node();
         let el = node.as_element().unwrap();
         let attrs = el.attributes.borrow();

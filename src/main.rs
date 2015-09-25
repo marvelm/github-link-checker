@@ -48,10 +48,12 @@ struct CheckedLink {
     url: Url,
     broken: bool,
     referrer: Url,
+    text: String,
 }
 impl fmt::Display for CheckedLink {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "({}, broken={})", self.url, self.broken)
+        write!(f, "([{}]({}), page={}, broken={})",
+               self.text, self.url, self.referrer, self.broken)
     }
 }
 impl std::cmp::PartialEq for CheckedLink {
@@ -102,7 +104,8 @@ fn check_readme(repo: Repo) -> HashSet<CheckedLink> {
         let mut link = CheckedLink {
             url: url.clone(),
             broken: false,
-            referrer: readme_url.clone()
+            referrer: readme_url.clone(),
+            text: node.text_contents(),
         };
 
         if !links.contains(&link) {

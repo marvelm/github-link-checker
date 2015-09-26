@@ -38,8 +38,9 @@ struct Repo {
     name: String,
 }
 impl Repo {
-    fn url(&self) -> String {
-        format!("https://github.com/{}/{}", self.owner, self.name)
+    fn url(&self) -> Url {
+        Url::parse(&format!(
+            "https://github.com/{}/{}", self.owner, self.name)[..]).unwrap()
     }
 }
 impl fmt::Display for Repo {
@@ -92,8 +93,8 @@ fn is_broken(url: &Url) -> bool {
 
 fn check_readme(repo: Repo) -> HashSet<CheckedLink> {
     let client = Client::new();
-    let readme_url = Url::parse(&repo.url()[..]).unwrap();
-    let mut res = client.get(&repo.url()[..]).send().unwrap();
+    let readme_url = repo.url();
+    let mut res = client.get(&readme_url.serialize()).send().unwrap();
     let html = Html::from_stream(&mut res).unwrap();
     let doc = html.parse();
 

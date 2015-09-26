@@ -4,6 +4,9 @@ extern crate hyper;
 extern crate kuchiki;
 extern crate url;
 
+#[macro_use]
+extern crate log;
+
 use std::env::args;
 use std::fmt;
 use std::collections::HashSet;
@@ -52,8 +55,13 @@ struct CheckedLink {
 }
 impl fmt::Display for CheckedLink {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "([{}]({}), page={}, broken={})",
-               self.text, self.url, self.referrer, self.broken)
+        if self.text != "" {
+            write!(f, "([{}]({}), page={}, broken={})",
+                   self.text, self.url, self.referrer, self.broken)
+        } else {
+            write!(f, "({}, page={}, broken={})",
+                   self.url, self.referrer, self.broken)
+        }
     }
 }
 impl std::cmp::PartialEq for CheckedLink {
@@ -98,8 +106,15 @@ fn check_readme(repo: Repo) -> HashSet<CheckedLink> {
         let el = node.as_element().unwrap();
         let attrs = el.attributes.borrow();
         let href = attrs.get(&qualname!("", "href")).unwrap();
-        let url = UrlParser::new().base_url(&readme_url)
-            .parse(href).unwrap();
+
+        let url = {
+            let parsed_url = UrlParser::new().base_url(&readme_url).parse(href);
+            if parsed_url.is_err() {
+                info!("Invalid URL on README: {}", node.text_contents());
+                continue;
+            }
+            parsed_url.unwrap()
+        };
 
         let mut link = CheckedLink {
             url: url.clone(),

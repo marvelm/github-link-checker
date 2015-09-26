@@ -4,6 +4,7 @@ version = "0.1.0"
 dependencies = [
  "hyper 0.6.14 (registry+https://github.com/rust-lang/crates.io-index)",
  "kuchiki 0.1.0 (git+https://github.com/marvelm/kuchiki)",
+ "log 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "string_cache 0.1.13 (registry+https://github.com/rust-lang/crates.io-index)",
  "url 0.2.37 (registry+https://github.com/rust-lang/crates.io-index)",
 ]

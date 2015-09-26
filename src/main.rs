@@ -85,7 +85,7 @@ impl std::cmp::Eq for CheckedLink {}
 
 fn is_broken(url: &Url) -> bool {
     let client = Client::new();
-    match client.get(&url.serialize()[..]).send() {
+    match client.get(&url.serialize()).send() {
         Ok(res) => !res.status.is_success(),
         Err(_) => false,
     }

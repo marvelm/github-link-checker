@@ -27,7 +27,9 @@ fn main() {
         }
     };
     for link in check_readme(repo) {
-        println!("{}", link);
+        if link.broken {
+            println!("{}", link);
+        }
     }
 }
 

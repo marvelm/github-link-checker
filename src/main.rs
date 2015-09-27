@@ -27,10 +27,10 @@ fn main() {
             name: split.next().unwrap().to_string()
         }
     };
-    for link in check_readme(repo) {
-        if link.broken {
-            println!("{}", link);
-        }
+
+    let mut links = check_readme(&repo);
+    for link in check_wiki(&repo) {
+        links.insert(link);
     }
 }
 
@@ -103,13 +103,13 @@ fn get_doc(url: &Url) -> NodeRef {
     html.parse()
 }
 
-fn check_readme(repo: Repo) -> HashSet<CheckedLink> {
+fn check_readme(repo: &Repo) -> HashSet<CheckedLink> {
     let doc = get_doc(&repo.url());
     let select = doc.select("#readme a");
     check_links(select, repo.url(), String::from("README"))
 }
 
-fn check_wiki(repo: Repo) -> HashSet<CheckedLink> {
+fn check_wiki(repo: &Repo) -> HashSet<CheckedLink> {
     let wiki_home = get_doc(&repo.wiki_url());
     let mut links = HashSet::new();
 

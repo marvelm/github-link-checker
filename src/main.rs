@@ -13,7 +13,8 @@ use std::collections::HashSet;
 
 use hyper::Client;
 
-use kuchiki::Html;
+use kuchiki::{Html, NodeRef};
+use kuchiki::iter::{Select, Elements, Descendants};
 
 use url::{Url, UrlParser};
 
@@ -91,27 +92,35 @@ fn is_broken(url: &Url) -> bool {
     }
 }
 
-fn check_readme(repo: Repo) -> HashSet<CheckedLink> {
+fn get_doc(url: &Url) -> NodeRef {
     let client = Client::new();
-    let readme_url = repo.url();
-    let mut res = client.get(&readme_url.serialize()).send().unwrap();
+    let mut res = client.get(&url.serialize()).send().unwrap();
     let html = Html::from_stream(&mut res).unwrap();
-    let doc = html.parse();
+    html.parse()
+}
 
-    let mut links = HashSet::new();
+fn check_readme(repo: Repo) -> HashSet<CheckedLink> {
+    let doc = get_doc(&repo.url());
     let select = doc.select("#readme a");
-    if select.is_err() {
+    check_links(select, repo.url())
+}
+
+type SelectResult = Result<Select<Elements<Descendants>>,()>;
+
+fn check_links(select_result: SelectResult, referrer: Url) -> HashSet<CheckedLink> {
+    let mut links = HashSet::new();
+    if select_result.is_err() {
         return links;
     }
 
-    for a in select.unwrap() {
+    for a in select_result.unwrap() {
         let node = a.as_node();
         let el = node.as_element().unwrap();
         let attrs = el.attributes.borrow();
         let href = attrs.get(&qualname!("", "href")).unwrap();
 
         let url = {
-            let parsed_url = UrlParser::new().base_url(&readme_url).parse(href);
+            let parsed_url = UrlParser::new().base_url(&referrer).parse(href);
             if parsed_url.is_err() {
                 info!("Invalid URL on README: {}", node.text_contents());
                 continue;
@@ -122,7 +131,7 @@ fn check_readme(repo: Repo) -> HashSet<CheckedLink> {
         let mut link = CheckedLink {
             url: url.clone(),
             broken: false,
-            referrer: readme_url.clone(),
+            referrer: referrer.clone(),
             text: node.text_contents(),
         };
 

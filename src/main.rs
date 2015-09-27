@@ -43,6 +43,10 @@ impl Repo {
         Url::parse(&format!(
             "https://github.com/{}/{}", self.owner, self.name)[..]).unwrap()
     }
+
+    fn wiki_url(&self) -> Url {
+        Url::parse(&format!("{}/wiki", self.url().serialize())[..]).unwrap()
+    }
 }
 impl fmt::Display for Repo {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -56,12 +60,13 @@ struct CheckedLink {
     broken: bool,
     referrer: Url,
     text: String,
+    page_title: String,
 }
 impl fmt::Display for CheckedLink {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         if self.text != "" {
-            write!(f, "([{}]({}), page={}, broken={})",
-                   self.text, self.url, self.referrer, self.broken)
+            write!(f, "([{}]({}), page=[{}]({}), broken={})",
+                   self.text, self.url, self.page_title, self.referrer, self.broken)
         } else {
             write!(f, "({}, page={}, broken={})",
                    self.url, self.referrer, self.broken)
@@ -91,7 +96,6 @@ fn is_broken(url: &Url) -> bool {
         Err(_) => false,
     }
 }
-
 fn get_doc(url: &Url) -> NodeRef {
     let client = Client::new();
     let mut res = client.get(&url.serialize()).send().unwrap();
@@ -102,12 +106,41 @@ fn get_doc(url: &Url) -> NodeRef {
 fn check_readme(repo: Repo) -> HashSet<CheckedLink> {
     let doc = get_doc(&repo.url());
     let select = doc.select("#readme a");
-    check_links(select, repo.url())
+    check_links(select, repo.url(), String::from("README"))
+}
+
+fn check_wiki(repo: Repo) -> HashSet<CheckedLink> {
+    let wiki_home = get_doc(&repo.wiki_url());
+    let mut links = HashSet::new();
+
+    for page_link in wiki_home.select("a.wiki-page-link").unwrap(){
+        let node = page_link.as_node();
+        let el = node.as_element().unwrap();
+        let attrs = el.attributes.borrow();
+        let href = attrs.get(&qualname!("", "href")).unwrap();
+
+        let page_title = node.text_contents();
+        let page_url = UrlParser::new()
+            .base_url(&repo.wiki_url()).parse(href).unwrap();
+        let page = get_doc(&page_url);
+
+        for link in
+            check_links(
+                page.select("div.markdown-body a"),
+                page_url,
+                page_title.clone(),
+            )
+        {
+            links.insert(link);
+        }
+    };
+
+    links
 }
 
 type SelectResult = Result<Select<Elements<Descendants>>,()>;
 
-fn check_links(select_result: SelectResult, referrer: Url) -> HashSet<CheckedLink> {
+fn check_links(select_result: SelectResult, referrer: Url, page_title: String) -> HashSet<CheckedLink> {
     let mut links = HashSet::new();
     if select_result.is_err() {
         return links;
@@ -122,7 +155,7 @@ fn check_links(select_result: SelectResult, referrer: Url) -> HashSet<CheckedLin
         let url = {
             let parsed_url = UrlParser::new().base_url(&referrer).parse(href);
             if parsed_url.is_err() {
-                info!("Invalid URL on README: {}", node.text_contents());
+                info!("Invalid URL on {}: {}", page_title, node.text_contents());
                 continue;
             }
             parsed_url.unwrap()
@@ -133,6 +166,7 @@ fn check_links(select_result: SelectResult, referrer: Url) -> HashSet<CheckedLin
             broken: false,
             referrer: referrer.clone(),
             text: node.text_contents(),
+            page_title: page_title.clone()
         };
 
         if !links.contains(&link) {

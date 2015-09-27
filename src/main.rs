@@ -10,6 +10,7 @@ extern crate log;
 use std::env::args;
 use std::fmt;
 use std::collections::HashSet;
+use std::time::Duration;
 
 use hyper::Client;
 
@@ -29,8 +30,17 @@ fn main() {
     };
 
     let mut links = check_readme(&repo);
+    for link in &links {
+        println!("{}", link);
+    }
     for link in check_wiki(&repo) {
         links.insert(link);
+    }
+    println!("\n\n\n");
+    for link in &links {
+        if link.broken {
+            println!("{}", link);
+        }
     }
 }
 
@@ -98,6 +108,8 @@ fn is_broken(url: &Url) -> bool {
 }
 fn get_doc(url: &Url) -> NodeRef {
     let client = Client::new();
+    client.set_read_timeout(Some(Duration::from_secs(5)));
+    client.set_write_timeout(Some(Duration::from_secs(5)));
     let mut res = client.get(&url.serialize()).send().unwrap();
     let html = Html::from_stream(&mut res).unwrap();
     html.parse()
@@ -141,6 +153,8 @@ fn check_wiki(repo: &Repo) -> HashSet<CheckedLink> {
 type SelectResult = Result<Select<Elements<Descendants>>,()>;
 
 fn check_links(select_result: SelectResult, referrer: Url, page_title: String) -> HashSet<CheckedLink> {
+    println!("Checking links on {}", referrer);
+
     let mut links = HashSet::new();
     if select_result.is_err() {
         return links;
@@ -155,7 +169,8 @@ fn check_links(select_result: SelectResult, referrer: Url, page_title: String) -
         let url = {
             let parsed_url = UrlParser::new().base_url(&referrer).parse(href);
             if parsed_url.is_err() {
-                info!("Invalid URL on {}: {}", page_title, node.text_contents());
+                println!("Invalid URL on {}: {}",
+                         page_title, node.text_contents());
                 continue;
             }
             parsed_url.unwrap()

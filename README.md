@@ -1,5 +1,8 @@
 # github-link-checker
-Usage: 
+Links that take forever to resolve will break the checker.
+The Stable release of Rust doesn't have support for Tcp timeouts.
+
+Usage:
 >./github-link-checker marvelm/github-link-checker
 
 ### How to build and run

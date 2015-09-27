@@ -10,7 +10,6 @@ extern crate log;
 use std::env::args;
 use std::fmt;
 use std::collections::HashSet;
-use std::time::Duration;
 
 use hyper::Client;
 
@@ -108,8 +107,6 @@ fn is_broken(url: &Url) -> bool {
 }
 fn get_doc(url: &Url) -> NodeRef {
     let client = Client::new();
-    client.set_read_timeout(Some(Duration::from_secs(5)));
-    client.set_write_timeout(Some(Duration::from_secs(5)));
     let mut res = client.get(&url.serialize()).send().unwrap();
     let html = Html::from_stream(&mut res).unwrap();
     html.parse()

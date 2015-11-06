@@ -10,6 +10,7 @@ extern crate log;
 use std::env::args;
 use std::fmt;
 use std::collections::HashSet;
+use std::time::Duration;
 
 use hyper::Client;
 
@@ -99,14 +100,17 @@ impl std::hash::Hash for CheckedLink {
 impl std::cmp::Eq for CheckedLink {}
 
 fn is_broken(url: &Url) -> bool {
-    let client = Client::new();
+    let mut client = Client::new();
+    client.set_read_timeout(Some(Duration::new(5, 0))); // 5 seconds
     match client.get(&url.serialize()).send() {
         Ok(res) => !res.status.is_success(),
         Err(_) => false,
     }
 }
+
 fn get_doc(url: &Url) -> NodeRef {
-    let client = Client::new();
+    let mut client = Client::new();
+    client.set_read_timeout(Some(Duration::new(5, 0))); // 5 seconds
     let mut res = client.get(&url.serialize()).send().unwrap();
     let html = Html::from_stream(&mut res).unwrap();
     html.parse()

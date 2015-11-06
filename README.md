@@ -2,7 +2,7 @@
 
 Tested with Rust 1.4.0 stable
 
-Links that take forever to resolve will break the checker because support for Tcp timeouts haven't been implemented.
+Links that take longer than 5 seconds to resolve will be marked as broken.
 
 Usage:
 >./github-link-checker marvelm/github-link-checker

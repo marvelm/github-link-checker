@@ -4,10 +4,17 @@ version = "0.1.0"
 authors = ["m <m@marvelmathew.ca>"]
 
 [dependencies]
-hyper = "0.6"
+# hyper = "0.6"
 string_cache = "0.1.13"
 url = "0.2.37"
 log = "0.3.2"
+# Pull from Github in order to use hyper::client::Request::set_read_timeout
+# Build currently not passing for MSVC
+hyper = { git = "https://github.com/hyperium/hyper", features = ["timeouts"] }
 
 [dependencies.kuchiki]
 git = "https://github.com/SimonSapin/kuchiki"
+
+
+[features]
+default = []

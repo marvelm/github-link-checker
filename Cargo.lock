@@ -2,7 +2,7 @@
 name = "github-link-checker"
 version = "0.1.0"
 dependencies = [
- "hyper 0.6.15 (registry+https://github.com/rust-lang/crates.io-index)",
+ "hyper 0.6.15 (git+https://github.com/hyperium/hyper)",
  "kuchiki 0.1.0 (git+https://github.com/SimonSapin/kuchiki)",
  "log 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "string_cache 0.1.16 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -163,7 +163,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "hyper"
 version = "0.6.15"
-source = "registry+https://github.com/rust-lang/crates.io-index"
+source = "git+https://github.com/hyperium/hyper#45b0b884d18a1b7a7ca692dab8e0c3b3ce10c0eb"
 dependencies = [
  "cookie 0.1.21 (registry+https://github.com/rust-lang/crates.io-index)",
  "httparse 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",

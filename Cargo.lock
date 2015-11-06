@@ -3,7 +3,7 @@ name = "github-link-checker"
 version = "0.1.0"
 dependencies = [
  "hyper 0.6.15 (registry+https://github.com/rust-lang/crates.io-index)",
- "kuchiki 0.1.0 (git+https://github.com/marvelm/kuchiki)",
+ "kuchiki 0.1.0 (git+https://github.com/SimonSapin/kuchiki)",
  "log 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "string_cache 0.1.16 (registry+https://github.com/rust-lang/crates.io-index)",
  "url 0.2.37 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -193,12 +193,12 @@ dependencies = [
 [[package]]
 name = "kuchiki"
 version = "0.1.0"
-source = "git+https://github.com/marvelm/kuchiki#3f1df371ae867aa7fdd595ec0795793ef4a6a054"
+source = "git+https://github.com/SimonSapin/kuchiki#cb796edeaab977207366b2cd63e24e959b54f59c"
 dependencies = [
  "html5ever 0.2.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "matches 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "rc 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "selectors 0.2.1 (git+https://github.com/servo/rust-selectors)",
+ "selectors 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "string_cache 0.1.16 (registry+https://github.com/rust-lang/crates.io-index)",
  "tendril 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -367,7 +367,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "selectors"
 version = "0.2.1"
-source = "git+https://github.com/servo/rust-selectors#8d76029348fdf15662cc086e372d9f6714b164dc"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "bitflags 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "cssparser 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
